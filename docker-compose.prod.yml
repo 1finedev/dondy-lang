@@ -18,7 +18,7 @@ services:
       - CACHE_REDIS_URL=redis://redis:6379/2
       - QUEUE_REDIS_URL=redis://redis:6379/1
       - CACHE_REDIS_DEFAULT_EXPIRY=5200
-      - NODE_ENV=development
+      - NODE_ENV=production
       - APP_NAME=DONDY_BACKEND
       - PORT=4000
       - DB_URL=mongodb://mongo:27017/dondy
