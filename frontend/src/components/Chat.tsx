@@ -10,7 +10,9 @@ const Chat = () => {
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
-        bgcolor: 'background.default'
+        maxHeight: '100dvh',
+        bgcolor: 'background.default',
+        overflow: 'hidden'
       }}
     >
       <ChatHeader />
