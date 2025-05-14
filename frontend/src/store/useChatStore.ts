@@ -227,14 +227,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   handleInitialization: (initialData) => {
-    console.log(initialData);
+    console.log();
     const { messageHistory } = initialData;
 
     if (!messageHistory) return;
     set((state) => ({
       isLoading: false,
       messages: [
-        ...state.messages,
+        state.messages?.[0],
         ...messageHistory.map((m) => ({
           content: m.content,
           _id: m._id,
