@@ -1,5 +1,5 @@
 import ChatIcon from '@mui/icons-material/Chat';
-import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 
 const ChatHeader = () => {
   return (
@@ -12,7 +12,7 @@ const ChatHeader = () => {
         borderColor: 'grey.200'
       }}
     >
-      <Toolbar>
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Box display="flex" alignItems="center">
           <ChatIcon sx={{ color: 'primary.main', mr: 1 }} />
           <Typography
@@ -23,6 +23,23 @@ const ChatHeader = () => {
             Dondy Support
           </Typography>
         </Box>
+        <Button
+          variant="outlined"
+          size="small"
+          sx={{
+            ml: 2,
+            borderColor: 'primary.main',
+            color: 'primary.main',
+            '&:hover': {
+              borderColor: 'primary.dark',
+              color: 'white',
+              backgroundColor: 'primary.light'
+            }
+          }}
+          onClick={() => {}}
+        >
+          Switch to Admin
+        </Button>
       </Toolbar>
     </AppBar>
   );
