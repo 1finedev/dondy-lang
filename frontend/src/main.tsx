@@ -10,7 +10,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Admin from './administration/Admin';
 import App from './App';
 import './index.css';
-import { useChatStore } from './store/useChatStore';
 
 const router = createBrowserRouter([
   {
@@ -59,8 +58,6 @@ const theme = createTheme({
     }
   }
 });
-
-useChatStore().initializeSocket();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

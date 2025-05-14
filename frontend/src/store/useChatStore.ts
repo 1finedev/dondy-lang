@@ -39,6 +39,29 @@ interface BorError {
   updateSession?: boolean;
 }
 
+interface ILead {
+  _id: string;
+  sessionId?: string;
+  email?: string;
+  companyName: string;
+  companyInfo: string;
+  relevanceTag:
+    | 'Not relevant'
+    | 'Weak lead'
+    | 'Hot lead'
+    | 'Very big potential customer';
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface IPagination {
+  currentPage: number;
+  totalPages: number;
+  totalLeads: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
 interface ChatState {
   sessionId: string;
   connectionStatus: ConnectionStatus;
@@ -48,14 +71,27 @@ interface ChatState {
   isLoading: boolean;
   inputValue: string;
   resumedSession: boolean;
+  leads: {
+    data: ILead[];
+    pagination: IPagination;
+  };
 
   handleBotResponse: (response: BotResponse) => void;
-  initializeSocket: () => void;
+  initializeSocket: (sessionId?: string) => void;
   handleSocketErrors: (error: BorError) => void;
   handleInitialization: (data: { messageHistory: IMessage[] }) => void;
   sendMessage: (e: FormEvent) => Promise<void>;
   setInputValue: (value: string) => void;
   simulateStreaming: (data: IBotPrompts) => void;
+  getLeads: (page: number) => void;
+  handleFetchedLeads: (leads: {
+    data: {
+      data: ILead[];
+      pagination: IPagination;
+    };
+  }) => void;
+  fetchSessionMessages: (sessionId: string) => void;
+  handleFetchedMessages: (messages: { data: IMessage[] }) => void;
 }
 
 // Helper functions
@@ -68,7 +104,7 @@ const generateRandomId = () => Math.random().toString(36).substring(2, 15);
 
 export const useChatStore = create<ChatState>((set, get) => ({
   sessionId: '',
-  connectionStatus: 'connecting' as const,
+  connectionStatus: 'connecting',
   socket: null,
   resumedSession: false,
   messages: [
@@ -83,8 +119,20 @@ export const useChatStore = create<ChatState>((set, get) => ({
   currentStream: '',
   isLoading: false,
   inputValue: '',
+  leads: {
+    data: [],
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalLeads: 0,
+      hasNextPage: false,
+      hasPrevPage: false
+    }
+  },
 
   initializeSocket: () => {
+    if (get().socket?.connected) return;
+
     let sessionId =
       localStorage.getItem('dondy_chat_sessionId') || generateSessionId();
 
@@ -105,7 +153,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
       disconnect: () => set({ connectionStatus: 'disconnected' }),
       error: get().handleSocketErrors,
       initialize: get().handleInitialization,
-      bot_response: get().handleBotResponse
+      bot_response: get().handleBotResponse,
+      fetched_leads: get().handleFetchedLeads,
+      fetched_messages: get().handleFetchedMessages
     };
 
     Object.entries(socketEvents).forEach(([event, handler]) => {
@@ -240,6 +290,49 @@ export const useChatStore = create<ChatState>((set, get) => ({
       messages: [
         state.messages?.[0],
         ...messageHistory.map((m) => ({
+          content: m.content,
+          _id: m._id,
+          event: m.event,
+          createdAt: new Date(m.createdAt),
+          updatedAt: new Date(m.updatedAt)
+        }))
+      ]
+    }));
+  },
+  getLeads: async (page) => {
+    get().socket?.emit('fetch_leads', { page });
+  },
+  handleFetchedLeads: (data) => {
+    set({ leads: data.data });
+  },
+  fetchSessionMessages: async (sessionId) => {
+    set({
+      messages: [
+        {
+          _id: generateRandomId(),
+          event: EventTypes.BOT_RESPONSE,
+          content: `You are viewing the session message for session: ${sessionId}`,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      ]
+    });
+    get().socket?.emit('fetch_session_messages', { sessionId });
+  },
+  handleFetchedMessages: (data) => {
+    console.log(data);
+    set((state) => ({
+      isLoading: false,
+      messages: [
+        ...state.messages,
+        {
+          _id: generateRandomId(),
+          event: EventTypes.BOT_RESPONSE,
+          content: `Hey! I'm your Lead Assistant AI here at Dondy. I'll ask you a few quick questions to better understand your needs and see how we can help—let's get started! Just drop me a quick message to begin., Type RESTART to restart at any time.`,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        ...data.data.map((m) => ({
           content: m.content,
           _id: m._id,
           event: m.event,

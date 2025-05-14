@@ -13,12 +13,11 @@
 
 import { sendSocketResponse, validateRequestPayload } from '@/common';
 import { Message } from '@/models';
-import { isObjectIdOrHexString } from 'mongoose';
 import { type Socket } from 'socket.io';
 import { z } from 'zod';
 
 const fetchMessageValidationSchema = z.object({
-  sessionId: z.string().refine((val) => isObjectIdOrHexString(val))
+  sessionId: z.string()
 });
 
 export const fetchMessages = async (
@@ -35,7 +34,7 @@ export const fetchMessages = async (
 
   sendSocketResponse(
     socket,
-    'fetch-messages',
+    'fetched_messages',
     'Messages fetched successfully',
     messages
   );

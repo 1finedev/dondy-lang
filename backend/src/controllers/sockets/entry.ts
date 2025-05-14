@@ -20,7 +20,7 @@ import { fetchLeads, fetchMessages, handleMessageReceived } from './handlers';
 export const SOCKET_EVENTS = {
   message: handleMessageReceived,
   fetch_leads: fetchLeads,
-  fetch_messages: fetchMessages
+  fetch_session_messages: fetchMessages
 };
 
 export const initializeEventListeners = async (io: Server, socket: Socket) => {
@@ -34,7 +34,6 @@ export const initializeEventListeners = async (io: Server, socket: Socket) => {
 
     socket.emit('initialize', { messageHistory: messages });
   }
-
   Object.entries(SOCKET_EVENTS).forEach(([event, handler]) => {
     socket.on(event, (payload) =>
       catchSocketAsync(async (socket) => await handler(socket, payload))(socket)

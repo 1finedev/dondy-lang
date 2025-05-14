@@ -3,7 +3,7 @@
  * Created Date: Mon May 2025                                                   *
  * Author: Emmanuel Bayode O.                                                  *
  * -----                                                                       *
- * Last Modified: Tue May 13 2025                                              *
+ * Last Modified: Wed May 14 2025                                              *
  * Modified By: Emmanuel Bayode O.                                             *
  * -----                                                                       *
  * HISTORY:                                                                    *
@@ -24,7 +24,7 @@ export function sendSocketResponse(
   message: string,
   data: Record<string, any>
 ) {
-  return socket.emit('bot_response', {
+  return socket.emit(event, {
     message,
     event,
     data
@@ -48,7 +48,6 @@ export const validateRequestPayload = async <T>(
           )
           .filter((msg) => msg)
           .join('. '),
-        'error',
         errorDetails
       );
     } else {

@@ -1,9 +1,22 @@
 import { Box } from '@mui/material';
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ChatHeader from './components/ChatHeader';
 import ChatInputBox from './components/ChatInputBox';
 import ChatMessageList from './components/ChatMessageList';
+import { useChatStore } from './store/useChatStore';
 
 function App() {
+  const { initializeSocket, fetchSessionMessages } = useChatStore();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('sessionId');
+
+  useEffect(() => {
+    // Initialize socket with sessionId if available
+    initializeSocket();
+    fetchSessionMessages(sessionId);
+  }, []);
+
   return (
     <Box
       sx={{
@@ -17,7 +30,7 @@ function App() {
     >
       <ChatHeader />
       <ChatMessageList />
-      <ChatInputBox />
+      {!sessionId && <ChatInputBox />}
     </Box>
   );
 }

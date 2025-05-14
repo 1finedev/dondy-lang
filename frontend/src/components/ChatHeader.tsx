@@ -1,7 +1,10 @@
 import ChatIcon from '@mui/icons-material/Chat';
 import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const ChatHeader = () => {
+  const navigate = useNavigate();
+
   return (
     <AppBar
       position="static"
@@ -36,9 +39,9 @@ const ChatHeader = () => {
               backgroundColor: 'primary.light'
             }
           }}
-          onClick={() => {}}
+          onClick={() => navigate(`/admin`)}
         >
-          Switch to Admin
+          View All Leads
         </Button>
       </Toolbar>
     </AppBar>
