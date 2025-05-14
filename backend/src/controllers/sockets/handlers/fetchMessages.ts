@@ -30,7 +30,7 @@ export const fetchMessages = async (
     socket.id
   );
 
-  const messages = await Message.find({ sessionId }).sort('-createdAt');
+  const messages = await Message.find({ sessionId }).sort('createdAt');
 
   sendSocketResponse(
     socket,
