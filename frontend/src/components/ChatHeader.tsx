@@ -1,9 +1,16 @@
+import { useChatStore } from '@/store/useChatStore';
 import ChatIcon from '@mui/icons-material/Chat';
 import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const ChatHeader = () => {
   const navigate = useNavigate();
+  const { restartSession } = useChatStore();
+
+  const handleRestart = () => {
+    restartSession();
+    navigate(`/`);
+  };
 
   return (
     <AppBar
@@ -16,7 +23,14 @@ const ChatHeader = () => {
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Box display="flex" alignItems="center">
+        <Box
+          display="flex"
+          alignItems="center"
+          sx={{
+            cursor: 'pointer'
+          }}
+          onClick={handleRestart}
+        >
           <ChatIcon sx={{ color: 'primary.main', mr: 1 }} />
           <Typography
             variant="h6"

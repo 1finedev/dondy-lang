@@ -75,7 +75,11 @@ interface ChatState {
     data: ILead[];
     pagination: IPagination;
   };
-
+  restartSession: (
+    message?: string,
+    sessionId?: string,
+    updateSession?: boolean
+  ) => void;
   handleBotResponse: (response: BotResponse) => void;
   initializeSocket: (sessionId?: string) => void;
   handleSocketErrors: (error: BorError) => void;
@@ -188,25 +192,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     if (sessionId !== get().sessionId) return;
 
     if (restart) {
-      localStorage.removeItem('dondy_chat_sessionId');
-      const newSessionId = updateSession ? sessionId : generateSessionId();
-      set({
-        sessionId: newSessionId,
-        resumedSession: !!updateSession,
-        currentStream: '',
-        isLoading: true
-      });
-
-      get().socket.auth = { sessionId: newSessionId };
-      get().socket.disconnect();
-      get().socket.connect();
-
-      get().simulateStreaming({
-        content: message,
-        _id: generateRandomId(),
-        event: EventTypes.BOT_RESPONSE
-      });
-
+      get().restartSession(message, sessionId, updateSession);
       return;
     }
 
@@ -341,5 +327,32 @@ export const useChatStore = create<ChatState>((set, get) => ({
         }))
       ]
     }));
+  },
+  restartSession: (message, sessionId, updateSession) => {
+    localStorage.removeItem('dondy_chat_sessionId');
+    const newSessionId =
+      updateSession && sessionId ? sessionId : generateSessionId();
+
+    set({
+      sessionId: newSessionId,
+      resumedSession: !!updateSession,
+      messages: [
+        {
+          content:
+            message ||
+            `Hey! I'm your Lead Assistant AI here at Dondy. I'll ask you a few quick questions to better understand your needs and see how we can help—let's get started! Just drop me a quick message to begin., Type RESTART to restart at any time.`,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          _id: generateRandomId(),
+          event: EventTypes.BOT_RESPONSE
+        }
+      ],
+      currentStream: '',
+      isLoading: true
+    });
+
+    get().socket.auth = { sessionId: newSessionId };
+    get().socket.disconnect();
+    get().socket.connect();
   }
 }));

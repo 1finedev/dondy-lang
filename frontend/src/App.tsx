@@ -14,7 +14,9 @@ function App() {
   useEffect(() => {
     // Initialize socket with sessionId if available
     initializeSocket();
-    fetchSessionMessages(sessionId);
+    if (sessionId) {
+      fetchSessionMessages(sessionId);
+    }
   }, []);
 
   return (
