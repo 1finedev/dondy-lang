@@ -75,7 +75,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     {
       _id: generateRandomId(),
       event: EventTypes.BOT_RESPONSE,
-      content: `Hey! I'm your Lead Assistant AI here at Dondy. I'll ask you a few quick questions to better understand your needs and see how we can help—let's get started! Just drop me a quick message to begin.`,
+      content: `Hey! I'm your Lead Assistant AI here at Dondy. I'll ask you a few quick questions to better understand your needs and see how we can help—let's get started! Just drop me a quick message to begin., Type RESTART to restart at any time.`,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -119,11 +119,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   handleBotResponse: (response) => {
     const { message, sessionId, event } = response;
+    console.log(sessionId !== get().sessionId);
+
     if (sessionId !== get().sessionId) return;
 
-    set({
-      isLoading: true
-    });
+    console.log(response);
 
     get().simulateStreaming({
       content: message,
@@ -139,19 +139,24 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     if (restart) {
       localStorage.removeItem('dondy_chat_sessionId');
-
+      const newSessionId = updateSession ? sessionId : generateSessionId();
       set({
-        sessionId: updateSession ? sessionId : generateSessionId(),
+        sessionId: newSessionId,
         resumedSession: !!updateSession,
         currentStream: '',
         isLoading: true
       });
+
+      get().socket.auth = { sessionId: newSessionId };
+      get().socket.disconnect();
+      get().socket.connect();
 
       get().simulateStreaming({
         content: message,
         _id: generateRandomId(),
         event: EventTypes.BOT_RESPONSE
       });
+
       return;
     }
 
@@ -227,7 +232,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   handleInitialization: (initialData) => {
-    console.log();
     const { messageHistory } = initialData;
 
     if (!messageHistory) return;

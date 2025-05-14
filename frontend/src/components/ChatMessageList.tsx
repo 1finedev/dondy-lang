@@ -33,11 +33,11 @@ const ChatMessageList = () => {
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pb: 1 }}>
         {messages.map((message) => (
           <Box
-            key={message._id}
+            key={message?._id}
             sx={{
               display: 'flex',
               justifyContent:
-                message.event === EventTypes.USER_PROMPT
+                message?.event === EventTypes.USER_PROMPT
                   ? 'flex-end'
                   : 'flex-start',
               animation: 'fadeIn 0.3s ease-in-out'
@@ -48,7 +48,7 @@ const ChatMessageList = () => {
               sx={{
                 maxWidth: { xs: '90%', sm: '80%' },
                 backgroundColor:
-                  message.event === EventTypes.USER_PROMPT
+                  message?.event === EventTypes.USER_PROMPT
                     ? 'rgb(248, 240, 255)'
                     : 'rgb(240, 244, 255)',
                 px: 2,
@@ -58,7 +58,7 @@ const ChatMessageList = () => {
               }}
             >
               <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>
-                {message.content
+                {message?.content
                   .split(/\b(https?:\/\/\S+)\b/)
                   .map((part, index) =>
                     part.match(/^https?:\/\//) ? (
@@ -89,7 +89,7 @@ const ChatMessageList = () => {
         ))}
         {isLoading ? (
           <TypingIndicator />
-        ) : currentStream ? (
+        ) : currentStream.length > 0 ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pb: 1 }}>
             <Box
               sx={{

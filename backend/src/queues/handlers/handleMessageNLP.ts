@@ -84,10 +84,9 @@ export const handleMessageNLP = async (payload: PROCESS_MESSAGE_JOB_DATA) => {
       sessionId
     });
 
-  if (message.toUpperCase() === 'RESTART')
+  if (message.toUpperCase().trim() === 'RESTART')
     return global.io.to(socketId).emit('error', {
-      message:
-        'Thank you for chatting with us! Type RESTART if you would like to begin a new session.',
+      message: `Hey! I'm your Lead Assistant AI here at Dondy. I'll ask you a few quick questions to better understand your needs and see how we can help—let's get started! Just drop me a quick message to begin.`,
       sessionId,
       restart: true
     });
