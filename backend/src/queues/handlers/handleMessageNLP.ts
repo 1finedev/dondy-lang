@@ -27,7 +27,7 @@ Interaction Flow:
   6. Once all data is collected, compute relevanceTag and set step_id to "done".
 
 Lead Classification (relevanceTag):
-  • Very big potential customer → large team + high budget.  
+  • Very big potential customer → large team + high budget or already known and reputable.  
   • Hot lead               → mid-sized team + adequate budget.  
   • Weak lead             → small team or limited budget.  
   • Not relevant          → insufficient data or low fit.  
