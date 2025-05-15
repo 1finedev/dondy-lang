@@ -47,7 +47,7 @@ Before setting 'step_id: "done"' or assigning a relevanceTag:
 - If 'relevanceTag' is "Hot lead" or "Very big potential customer":
   - Append this message to 'botMessage':  
     "We're excited about the potential opportunity to work together! Based on your requirements, we'd love to schedule a personalized demo right away. Please pick a time that works best for you here: https://calendly.com/kanhasoft/demo"
-- If 'relevanceTag' is "Weak lead" or "Not relevant":
+- If after up to 6 questions 'relevanceTag' is "Weak lead" or "Not relevant":
   - Append this message to 'botMessage':  
     "Thanks for sharing! It seems this isn't the right fit right now. Feel free to reach out if anything changes."
 
