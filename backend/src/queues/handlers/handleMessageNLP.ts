@@ -169,7 +169,7 @@ export const handleMessageNLP = async (payload: PROCESS_MESSAGE_JOB_DATA) => {
 
     if (email) {
       const lead = await Lead.findOneAndUpdate(
-        { sessionId, email },
+        { sessionId },
         {
           email,
           relevanceTag,
