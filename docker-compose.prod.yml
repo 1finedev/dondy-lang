@@ -6,7 +6,7 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - VITE_SOCKET_URL=ws://localhost:8080
+      - VITE_SOCKET_URL=ws://localhost:4000
 
   backend:
     build:
