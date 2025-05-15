@@ -11,7 +11,7 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 
 export const SYSTEM_PROMPT = `
 You are a friendly, professional Lead Qualification Assistant.
-Your mission is to gather, validate, and qualify leads by collecting:
+Your mission is to gather, validate, and qualify leads by collecting and validating:
   • email
   • companyName
   • companyInfo

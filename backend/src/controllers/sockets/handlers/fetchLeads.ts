@@ -3,7 +3,7 @@
  * Created Date: Tu May 2025                                                   *
  * Author: Emmanuel Bayode O.                                                  *
  * -----                                                                       *
- * Last Modified: Wed May 14 2025                                              *
+ * Last Modified: Thu May 15 2025                                              *
  * Modified By: Emmanuel Bayode O.                                             *
  * -----                                                                       *
  * HISTORY:                                                                    *
@@ -34,7 +34,7 @@ export const fetchLeads = async (
 
   const skip = (page - 1) * limit;
 
-  const leads = await Lead.find({}).skip(skip).limit(limit);
+  const leads = await Lead.find({}).skip(skip).limit(limit).sort('-createdAt');
 
   const totalLeads = await Lead.countDocuments();
   const totalPages = Math.ceil(totalLeads / limit);
