@@ -27,3 +27,34 @@ KINDLY PROVIDE YOUR OWN OPENAI API KEY AS A REPLACEMENT TO ENABLE THE SERVER FUN
   - MongoDB database (containerized)
   - Redis memory cache (Containerized)
   - WebSocket server for real-time features
+
+## Key Features
+
+### Intelligent Lead Qualification
+
+- AI-powered conversation flow to gather lead information
+- Automated lead scoring based on business potential
+- Context-aware follow-up questions for deeper insights
+
+### Real-Time Interaction
+
+- Seamless chat experience with instant AI responses
+- Continuous conversation history across sessions
+- Automatic reconnection for uninterrupted communication
+
+### Lead Management System
+
+- Centralized lead repository with detailed profiles
+- Categorization based on business potential and relevance
+- Advanced filtering and search capabilities
+
+### Scalable Architecture
+
+- Containerized deployment for consistent environments
+- Asynchronous queued processing for high performance
+
+### Enhanced User Experience
+
+- Intuitive interface with real-time feedback
+- Visual indicators for system status and activity
+- Responsive design for cross-device compatibility

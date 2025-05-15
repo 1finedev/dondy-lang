@@ -75,11 +75,7 @@ interface ChatState {
     data: ILead[];
     pagination: IPagination;
   };
-  restartSession: (
-    message?: string,
-    sessionId?: string,
-    updateSession?: boolean
-  ) => void;
+
   handleBotResponse: (response: BotResponse) => void;
   initializeSocket: (sessionId?: string) => void;
   handleSocketErrors: (error: BorError) => void;
@@ -89,13 +85,11 @@ interface ChatState {
   simulateStreaming: (data: IBotPrompts) => void;
   getLeads: (page: number) => void;
   handleFetchedLeads: (leads: {
-    data: {
-      data: ILead[];
-      pagination: IPagination;
-    };
+    data: ILead[];
+    pagination: IPagination;
   }) => void;
   fetchSessionMessages: (sessionId: string) => void;
-  handleFetchedMessages: (messages: { data: IMessage[] }) => void;
+  handleFetchedMessages: (messages: IMessage[]) => void;
 }
 
 // Helper functions
@@ -135,7 +129,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   initializeSocket: () => {
-    if (get().socket?.connected) return;
+    if (get().socket.connected) return;
 
     let sessionId =
       localStorage.getItem('dondy_chat_sessionId') || generateSessionId();
@@ -159,7 +153,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       initialize: get().handleInitialization,
       bot_response: get().handleBotResponse,
       fetched_leads: get().handleFetchedLeads,
-      fetched_messages: get().handleFetchedMessages
+      fetch_messages: get().handleFetchedMessages
     };
 
     Object.entries(socketEvents).forEach(([event, handler]) => {
@@ -192,7 +186,25 @@ export const useChatStore = create<ChatState>((set, get) => ({
     if (sessionId !== get().sessionId) return;
 
     if (restart) {
-      get().restartSession(message, sessionId, updateSession);
+      localStorage.removeItem('dondy_chat_sessionId');
+      const newSessionId = updateSession ? sessionId : generateSessionId();
+      set({
+        sessionId: newSessionId,
+        resumedSession: !!updateSession,
+        currentStream: '',
+        isLoading: true
+      });
+
+      get().socket.auth = { sessionId: newSessionId };
+      get().socket.disconnect();
+      get().socket.connect();
+
+      get().simulateStreaming({
+        content: message,
+        _id: generateRandomId(),
+        event: EventTypes.BOT_RESPONSE
+      });
+
       return;
     }
 
@@ -286,73 +298,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }));
   },
   getLeads: async (page) => {
-    get().socket?.emit('fetch_leads', { page });
+    get().socket?.emit('get_leads', { page });
   },
-  handleFetchedLeads: (data) => {
-    set({ leads: data.data });
+  handleFetchedLeads: (leads) => {
+    set({ leads });
   },
   fetchSessionMessages: async (sessionId) => {
-    set({
-      messages: [
-        {
-          _id: generateRandomId(),
-          event: EventTypes.BOT_RESPONSE,
-          content: `You are viewing the session message for session: ${sessionId}`,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ]
-    });
     get().socket?.emit('fetch_session_messages', { sessionId });
   },
-  handleFetchedMessages: (data) => {
-    console.log(data);
-    set((state) => ({
-      isLoading: false,
-      messages: [
-        ...state.messages,
-        {
-          _id: generateRandomId(),
-          event: EventTypes.BOT_RESPONSE,
-          content: `Hey! I'm your Lead Assistant AI here at Dondy. I'll ask you a few quick questions to better understand your needs and see how we can help—let's get started! Just drop me a quick message to begin., Type RESTART to restart at any time.`,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        ...data.data.map((m) => ({
-          content: m.content,
-          _id: m._id,
-          event: m.event,
-          createdAt: new Date(m.createdAt),
-          updatedAt: new Date(m.updatedAt)
-        }))
-      ]
-    }));
-  },
-  restartSession: (message, sessionId, updateSession) => {
-    localStorage.removeItem('dondy_chat_sessionId');
-    const newSessionId =
-      updateSession && sessionId ? sessionId : generateSessionId();
-
-    set({
-      sessionId: newSessionId,
-      resumedSession: !!updateSession,
-      messages: [
-        {
-          content:
-            message ||
-            `Hey! I'm your Lead Assistant AI here at Dondy. I'll ask you a few quick questions to better understand your needs and see how we can help—let's get started! Just drop me a quick message to begin., Type RESTART to restart at any time.`,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          _id: generateRandomId(),
-          event: EventTypes.BOT_RESPONSE
-        }
-      ],
-      currentStream: '',
-      isLoading: true
-    });
-
-    get().socket.auth = { sessionId: newSessionId };
-    get().socket.disconnect();
-    get().socket.connect();
+  handleFetchedMessages: (messages) => {
+    set({ messages });
   }
 }));
