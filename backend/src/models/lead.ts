@@ -3,7 +3,7 @@
  * Created Date: Mo May 2025                                                   *
  * Author: Emmanuel Bayode O.                                                  *
  * -----                                                                       *
- * Last Modified: Wed May 14 2025                                              *
+ * Last Modified: Thu May 15 2025                                              *
  * Modified By: Emmanuel Bayode O.                                             *
  * -----                                                                       *
  * HISTORY:                                                                    *
@@ -15,8 +15,8 @@ import mongoose from 'mongoose';
 
 const leadSchema = new mongoose.Schema(
   {
-    sessionId: { type: String, unique: true, sparse: true },
-    email: { type: String, unique: true, sparse: true },
+    sessionId: { type: String },
+    email: { type: String },
     companyName: { type: String },
     companyInfo: { type: String },
     relevanceTag: {
